@@ -1,0 +1,13 @@
+{
+  "itemGroup.cutscenelib": "Example Mod Tab",
+  "block.cutscenelib.example_block": "Example Block",
+  "item.cutscenelib.example_item": "Example Item",
+
+  "cutscenelib.configuration.title": "CutsceneLib Configs",
+  "cutscenelib.configuration.section.cutscenelib.common.toml": "CutsceneLib Configs",
+  "cutscenelib.configuration.section.cutscenelib.common.toml.title": "CutsceneLib Configs",
+  "cutscenelib.configuration.items": "Item List",
+  "cutscenelib.configuration.logDirtBlock": "Log Dirt Block",
+  "cutscenelib.configuration.magicNumberIntroduction": "Magic Number Text",
+  "cutscenelib.configuration.magicNumber": "Magic Number"
+}

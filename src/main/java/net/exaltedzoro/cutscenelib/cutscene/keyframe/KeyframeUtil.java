@@ -1,0 +1,19 @@
+package net.exaltedzoro.cutscenelib.cutscene.keyframe;
+
+import net.minecraft.world.phys.Vec3;
+import org.joml.Quaternionf;
+
+public class KeyframeUtil {
+    public static Vec3 getOrientedPosition(Vec3 position, float angle) {
+        double angleRad = Math.toRadians(angle);
+
+        double xNew = Math.cos(angleRad) * position.x() - Math.sin(angleRad) * position.z();
+        double zNew = Math.sin(angleRad) * position.x() + Math.cos(angleRad) * position.z();
+
+        return new Vec3(xNew, position.y(), zNew);
+    }
+
+    public static Quaternionf getOrientedRotation(Quaternionf rotation, float angle) {
+
+    }
+}
