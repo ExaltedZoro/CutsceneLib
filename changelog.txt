@@ -1,0 +1,10 @@
+0.0.2
+Added changelog.txt
+Implemented KeyframeUtil.getOrientedRotation
+Added abstract class Keyframe
+Added class CutsceneData
+Added the beginning of the Track system
+Added logic for current keyframes
+
+0.0.1
+Initial commit
