@@ -1,10 +1,9 @@
 package net.exaltedzoro.cutscenelib.cutscene;
 
-import net.exaltedzoro.cutscenelib.cutscene.keyframe.CameraPositionKeyframe;
-import net.exaltedzoro.cutscenelib.cutscene.keyframe.CameraRotationKeyframe;
-import net.exaltedzoro.cutscenelib.cutscene.keyframe.KeyframeInterpolation;
+import net.exaltedzoro.cutscenelib.cutscene.track.Track;
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Quaternionf;
 
 import java.util.ArrayList;
 
@@ -21,13 +20,9 @@ public class Cutscene {
 
     private CutsceneData data;
 
-    public ArrayList<CameraPositionKeyframe> positionKeyframes = new ArrayList<>();
-    public ArrayList<CameraRotationKeyframe> rotationKeyframes = new ArrayList<>();
-
-    public ArrayList<CameraPositionKeyframe> currentPositionKeyframes = new ArrayList<>();
-    public ArrayList<CameraRotationKeyframe> currentRotationKeyframes = new ArrayList<>();
-
     protected boolean paused;
+
+    protected long startTime;
 
     protected int tick = 0;
 
@@ -65,124 +60,19 @@ public class Cutscene {
         this.tick = tick;
     }
 
-    public void addPositionKeyframe(Vec3 position, int tick, KeyframeInterpolation interpolation) {
-        positionKeyframes.add(new CameraPositionKeyframe(tick, position, interpolation));
+    public float getRotation() {
+        return rotation;
     }
 
-    public void addRotationKeyframe(Quaternionf rotation, int tick, KeyframeInterpolation interpolation) {
-        rotationKeyframes.add(new CameraRotationKeyframe(tick, rotation, interpolation));
-    }
+    public void tick(float partialTick) {
+        Level level = Minecraft.getInstance().level;
+        assert (level != null);
+        float elapsedTime = level.getGameTime() - startTime + partialTick;
 
-    public ArrayList<CameraPositionKeyframe> getCurrentPositionKeyframes() {
-        int time = getTick();
-        ArrayList<CameraPositionKeyframe> list = new ArrayList<>();
-        for (CameraPositionKeyframe keyframe : positionKeyframes) {
-            int index = positionKeyframes.indexOf(keyframe);
-            if (keyframe.getTick() <= time) {
-                if (positionKeyframes.size() <= 4) {
-                    switch (positionKeyframes.size()) {
-                        case 2 -> {
-                            list.add(positionKeyframes.get(0));
-                            list.add(positionKeyframes.get(0));
-                            list.add(positionKeyframes.get(1));
-                            list.add(positionKeyframes.get(1));
-                        }
-                        case 3 -> {
-                            int maxIndex = positionKeyframes.size() - 1;
+        ArrayList<Track<?>> tracks = data.getTracks();
 
-                            list.add(positionKeyframes.get(Math.max(0, index - 1)));
-                            list.add(positionKeyframes.get(index));
-                            list.add(positionKeyframes.get(Math.min(maxIndex, index + 1)));
-                            list.add(positionKeyframes.get(Math.min(maxIndex, index + 2)));
-                        }
-                        case 4 -> {
-                            list = positionKeyframes;
-                        }
-                    }
-                } else {
-                    if (index == 0) {
-                        list.add(keyframe);
-                        list.add(keyframe);
-                        list.add(positionKeyframes.get(index + 1));
-                        list.add(positionKeyframes.get(index + 2));
-                    } else if (index == positionKeyframes.size() - 1) {
-                        list.add(positionKeyframes.get(index - 2));
-                        list.add(positionKeyframes.get(index - 1));
-                        list.add(keyframe);
-                        list.add(keyframe);
-                    } else if (index == positionKeyframes.size() - 2) {
-                        list.add(positionKeyframes.get(index - 1));
-                        list.add(keyframe);
-                        list.add(positionKeyframes.get(index + 1));
-                        list.add(positionKeyframes.get(index + 1));
-                    } else {
-                        list.add(positionKeyframes.get(index - 1));
-                        list.add(keyframe);
-                        list.add(positionKeyframes.get(index + 1));
-                        list.add(positionKeyframes.get(index + 2));
-                    }
-                }
-            }
+        for (Track<?> track : tracks) {
+            track.evaluate(elapsedTime, this);
         }
-        return list;
-    }
-
-    public ArrayList<CameraRotationKeyframe> getCurrentRotationKeyframes() {
-        int time = getTick();
-        ArrayList<CameraRotationKeyframe> list = new ArrayList<>();
-        for (CameraRotationKeyframe keyframe : rotationKeyframes) {
-            int index = rotationKeyframes.indexOf(keyframe);
-            if (keyframe.getTick() <= time) {
-                if (rotationKeyframes.size() <= 4) {
-                    switch (rotationKeyframes.size()) {
-                        case 2 -> {
-                            list.add(rotationKeyframes.get(0));
-                            list.add(rotationKeyframes.get(0));
-                            list.add(rotationKeyframes.get(1));
-                            list.add(rotationKeyframes.get(1));
-                        }
-                        case 3 -> {
-                            if (index == 0) {
-                                list.add(rotationKeyframes.get(0));
-                                list.add(rotationKeyframes.get(0));
-                                list.add(rotationKeyframes.get(1));
-                                list.add(rotationKeyframes.get(2));
-                            } else if (index >= 1) {
-                                list.add(rotationKeyframes.get(0));
-                                list.add(rotationKeyframes.get(1));
-                                list.add(rotationKeyframes.get(2));
-                                list.add(rotationKeyframes.get(2));
-                            }
-                        }
-                        case 4 -> {
-                            list = rotationKeyframes;
-                        }
-                    }
-                } else {
-                    if (index == 0) {
-                        list.add(keyframe);
-                        list.add(keyframe);
-                        list.add(rotationKeyframes.get(index + 1));
-                        list.add(rotationKeyframes.get(index + 2));
-                    } else if (index == rotationKeyframes.size() - 1) {
-                        list.add(rotationKeyframes.get(index - 2));
-                        list.add(rotationKeyframes.get(index - 1));
-                        list.add(keyframe);
-                        list.add(keyframe);
-                    } else if (index == rotationKeyframes.size() - 2) {
-                        list.add(rotationKeyframes.get(index - 1));
-                        list.add(keyframe);
-                        list.add(rotationKeyframes.get(index + 1));
-                        list.add(rotationKeyframes.get(index + 1));
-                    } else {
-                        list.add(rotationKeyframes.get(index - 1));
-                        list.add(keyframe);
-                        list.add(rotationKeyframes.get(index + 1));
-                        list.add(rotationKeyframes.get(index + 2));
-                    }
-                }
-            }
-        }
-        return list;
     }
 }

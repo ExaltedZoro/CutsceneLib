@@ -1,10 +1,24 @@
+0.0.3
+- Added CameraPositionTrack
+- Added CutsceneCameraEntity
+- Fleshed out Track class
+- Track class is now abstract, additional functionality for special track types will be added in their own classes
+- Keyframe timing is now stored as a float
+- Removed redundant fields and methods from Cutscene
+- Added startTime field to Cutscene to allow for cutscene scheduling
+- Heavily reduced clutter in selected current keyframes for interpolated tracks
+- CutsceneData no longer stores any keyframes directly
+- Added docstrings for various methods
+- Changed message in client setup
+- Moved META-INF package into resources package
+
 0.0.2
-Added changelog.txt
-Implemented KeyframeUtil.getOrientedRotation
-Added abstract class Keyframe
-Added class CutsceneData
-Added the beginning of the Track system
-Added logic for current keyframes
+- Added changelog.txt
+- Implemented KeyframeUtil.getOrientedRotation
+- Added abstract class Keyframe
+- Added class CutsceneData
+- Added the beginning of the Track system
+- Added logic for current keyframes
 
 0.0.1
-Initial commit
+- Initial commit

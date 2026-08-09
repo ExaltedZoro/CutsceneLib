@@ -4,6 +4,13 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Quaternionf;
 
 public class KeyframeUtil {
+
+    /**
+     * Rotates a position around the origin on the y-axis
+     * @param position The position to be rotated (in local space for a cutscene with a non-zero origin)
+     * @param angle The angle that the position will be rotated by, in degrees
+     * @return position rotated around the y-axis by angle degrees
+     */
     public static Vec3 getOrientedPosition(Vec3 position, float angle) {
         double angleRad = Math.toRadians(angle);
 
