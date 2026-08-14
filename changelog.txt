@@ -1,3 +1,19 @@
+0.0.4
+- Added datapack support for cutscenes
+- Added test_cutscene.json
+- Added codecs for CutsceneData, Tracks, Keyframes and Quaternions
+- Added a Camera Rotation Track
+- Added registries for both Track types and CutsceneData instances (this allows new track types to be added by other mods and for easy lookup of cutscenes)
+- Added a command to run cutscenes (doesn't yet actually run the cutscene, just pulls the data)
+- CutsceneCameraEntity now has a Cutscene field
+- Simplified KeyframeUtil.getOrientedRotation
+- Renamed name field in CutsceneData to displayName
+- Track array in CutsceneData is now instantiated in the constructor
+- CutsceneData field in Cutscene is now final (and now has a getter)
+- Fixed keyframes still storing timings as ints
+- Moved neoforge.mods.toml back into templates directory
+
+
 0.0.3
 - Added CameraPositionTrack
 - Added CutsceneCameraEntity

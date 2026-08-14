@@ -1,18 +1,32 @@
 package net.exaltedzoro.cutscenelib.cutscene.track;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.exaltedzoro.cutscenelib.cutscene.Cutscene;
 import net.exaltedzoro.cutscenelib.cutscene.keyframe.CameraPositionKeyframe;
 import net.exaltedzoro.cutscenelib.cutscene.keyframe.KeyframeUtil;
 import net.exaltedzoro.cutscenelib.entity.CutsceneCameraEntity;
+import net.exaltedzoro.cutscenelib.registry.ModRegistries;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class CameraPositionTrack extends Track<CameraPositionKeyframe> {
 
     private ArrayList<CameraPositionKeyframe> currentKeyframes = new ArrayList<>();
+
+    public CameraPositionTrack(List<CameraPositionKeyframe> keyframes) {
+        // This constructor takes a List due to codec representation
+        super(new ArrayList<>(keyframes));
+    }
+
+    public MapCodec<? extends Track<?>> type() {
+        return ModTrackTypes.CAMERA_POSITION_TRACK_CODEC;
+    }
 
     /**
      * Duplicates the end keyframes on the track. This is useful for anything that uses Catmull-Rom splines so that edge cases are covered by default.

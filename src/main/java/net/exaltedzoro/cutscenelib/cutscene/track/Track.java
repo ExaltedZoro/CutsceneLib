@@ -1,5 +1,6 @@
 package net.exaltedzoro.cutscenelib.cutscene.track;
 
+import com.mojang.serialization.MapCodec;
 import net.exaltedzoro.cutscenelib.cutscene.Cutscene;
 import net.exaltedzoro.cutscenelib.cutscene.keyframe.Keyframe;
 
@@ -9,7 +10,11 @@ import java.util.Comparator;
 public abstract class Track<T extends Keyframe> {
     ArrayList<T> keyframes;
 
-    public Track() {}
+    public Track(ArrayList<T> keyframes) {
+        this.keyframes = keyframes;
+    }
+
+    public abstract MapCodec<? extends Track<?>> type();
 
     public void addKeyframe(T keyframe) {
         keyframes.add(keyframe);

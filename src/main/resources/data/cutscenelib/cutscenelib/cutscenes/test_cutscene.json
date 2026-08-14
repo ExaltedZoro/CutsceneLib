@@ -1,0 +1,29 @@
+{
+  "display_name": "Test Cutscene",
+  "tracks" : [
+    {
+      "type": "cutscenelib:camera_rotation",
+      "keyframes": [
+        {
+          "time": 0.0,
+          "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          },
+          "interpolation": "linear"
+        }
+      ]
+    },
+    {
+      "type": "cutscenelib:camera_position",
+      "keyframes": [
+        {
+          "time": 0,
+          "position": [0, 0, 0],
+          "interpolation": "smooth"
+        }
+      ]
+    }
+  ]
+}

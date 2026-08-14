@@ -21,10 +21,6 @@ public class KeyframeUtil {
     }
 
     public static Quaternionf getOrientedRotation(Quaternionf rotation, float angle) {
-        float y = rotation.y();
-
-        y += (float) Math.PI * (angle / 180);
-
-        return new Quaternionf(rotation.x(), y, rotation.z(), rotation.w());
+        return rotation.rotateY((float) Math.toRadians(angle));
     }
 }

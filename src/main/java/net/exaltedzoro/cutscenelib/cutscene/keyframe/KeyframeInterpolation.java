@@ -1,6 +1,11 @@
 package net.exaltedzoro.cutscenelib.cutscene.keyframe;
 
-public enum KeyframeInterpolation {
+import com.mojang.serialization.Codec;
+import net.minecraft.util.StringRepresentable;
+
+import java.util.Locale;
+
+public enum KeyframeInterpolation implements StringRepresentable {
     /**
      * Interpolate in a straight line between each keyframe
      */
@@ -12,5 +17,12 @@ public enum KeyframeInterpolation {
     /**
      * Cut instantly between each keyframe, no interpolation
      */
-    CUT
+    CUT;
+
+    public static final Codec<KeyframeInterpolation> CODEC = StringRepresentable.fromEnum(KeyframeInterpolation::values);
+
+    @Override
+    public String getSerializedName() {
+        return name().toLowerCase(Locale.ROOT);
+    }
 }

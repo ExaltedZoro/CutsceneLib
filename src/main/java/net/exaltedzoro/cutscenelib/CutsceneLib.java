@@ -1,5 +1,9 @@
 package net.exaltedzoro.cutscenelib;
 
+import net.exaltedzoro.cutscenelib.command.CommandEvents;
+import net.exaltedzoro.cutscenelib.cutscene.track.ModTrackTypes;
+import net.exaltedzoro.cutscenelib.event.CutsceneEvents;
+import net.exaltedzoro.cutscenelib.registry.ModRegistries;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -16,7 +20,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
@@ -80,6 +83,11 @@ public class CutsceneLib {
         // Note that this is necessary if and only if we want *this* class (CutsceneLib) to respond directly to events.
         // Do not add this line if there are no @SubscribeEvent-annotated functions in this class, like onServerStarting() below.
         NeoForge.EVENT_BUS.register(this);
+        NeoForge.EVENT_BUS.register(CutsceneEvents.class);
+        NeoForge.EVENT_BUS.register(CommandEvents.class);
+        //NeoForge.EVENT_BUS.register(ClientEvents.class);
+        modEventBus.register(ModRegistries.class);
+        modEventBus.register(ModTrackTypes.class);
 
         // Register the item to a creative tab
         modEventBus.addListener(this::addCreative);

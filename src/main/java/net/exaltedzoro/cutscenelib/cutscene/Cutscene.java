@@ -18,7 +18,7 @@ public class Cutscene {
      */
     protected float rotation;
 
-    private CutsceneData data;
+    private final CutsceneData data;
 
     protected boolean paused;
 
@@ -42,6 +42,10 @@ public class Cutscene {
 
     public void setOrigin(Vec3 pos) {
         origin = pos;
+    }
+
+    public CutsceneData getData() {
+        return data;
     }
 
     public boolean isPaused() {
