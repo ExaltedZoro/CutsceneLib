@@ -1,13 +1,11 @@
 package net.exaltedzoro.cutscenelib.cutscene.track;
 
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.exaltedzoro.cutscenelib.CutsceneLib;
 import net.exaltedzoro.cutscenelib.cutscene.Cutscene;
 import net.exaltedzoro.cutscenelib.cutscene.keyframe.CameraPositionKeyframe;
 import net.exaltedzoro.cutscenelib.cutscene.keyframe.KeyframeUtil;
 import net.exaltedzoro.cutscenelib.entity.CutsceneCameraEntity;
-import net.exaltedzoro.cutscenelib.registry.ModRegistries;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
@@ -32,8 +30,8 @@ public class CameraPositionTrack extends Track<CameraPositionKeyframe> {
      * Duplicates the end keyframes on the track. This is useful for anything that uses Catmull-Rom splines so that edge cases are covered by default.
      */
     private void duplicateEnds() {
-        keyframes.addFirst(keyframes.getFirst());
-        keyframes.addLast(keyframes.getLast());
+        keyframes.addFirst((CameraPositionKeyframe) keyframes.getFirst().copy());
+        keyframes.addLast((CameraPositionKeyframe) keyframes.getLast().copy());
     }
 
     @Override
@@ -43,24 +41,29 @@ public class CameraPositionTrack extends Track<CameraPositionKeyframe> {
             recacheCurrentKeyframes(time);
         }
 
-        if (Minecraft.getInstance().getCameraEntity() instanceof CutsceneCameraEntity cameraEntity) {
-            Vec3 newPosition = Vec3.ZERO;
-            float progress = getCurrentProgress(time);
+        CutsceneCameraEntity cameraEntity = (CutsceneCameraEntity) Minecraft.getInstance().getCameraEntity();
 
-            switch (currentKeyframes.get(1).getInterpolation()) {
-                case LINEAR -> {
-                    newPosition = calculateLinear(progress, cutscene.getOrigin(), cutscene.getRotation());
-                }
-                case SMOOTH ->  {
-                    newPosition = calculateSmooth(progress, cutscene.getOrigin(), cutscene.getRotation());
-                }
-                case CUT -> {
-                    newPosition = currentKeyframes.get(1).getPosition().add(cutscene.getOrigin());
-                }
+        Vec3 newPosition = Vec3.ZERO;
+        float progress = getCurrentProgress(time);
+
+        switch (currentKeyframes.get(1).getInterpolation()) {
+            case LINEAR -> {
+                newPosition = calculateLinear(progress, cutscene.getOrigin(), cutscene.getRotation());
             }
-
-            cameraEntity.setPos(newPosition);
+            case SMOOTH ->  {
+                newPosition = calculateSmooth(progress, cutscene.getOrigin(), cutscene.getRotation());
+            }
+            case CUT -> {
+                newPosition = currentKeyframes.get(1).getPosition().add(cutscene.getOrigin());
+            }
         }
+
+        CutsceneLib.LOGGER.info("Time: {}, Position: {}", time, newPosition);
+
+        Vec3 currentPosition = cameraEntity.position();
+
+        cameraEntity.absMoveTo(currentPosition.x(),  currentPosition.y(), currentPosition.z());
+        cameraEntity.setPos(newPosition);
     }
 
     @Override
@@ -68,6 +71,8 @@ public class CameraPositionTrack extends Track<CameraPositionKeyframe> {
         // Sort the keyframes in ascending time order, then duplicate the ends
         sortKeyframes();
         duplicateEnds();
+
+        recacheCurrentKeyframes(0);
     }
 
     private void recacheCurrentKeyframes(float time) {
@@ -80,35 +85,63 @@ public class CameraPositionTrack extends Track<CameraPositionKeyframe> {
      * @return An ArrayList of length 4 with elements T extends Keyframe
      */
     private ArrayList<CameraPositionKeyframe> getCurrentKeyframes(float time) {
-        int currentKeyframe = getKeyframeIndex(time);
-        ArrayList<CameraPositionKeyframe> toReturn = new ArrayList<>();
-        toReturn.add(keyframes.get(currentKeyframe - 1));
-        toReturn.add(keyframes.get(currentKeyframe));
-        toReturn.add(keyframes.get(currentKeyframe + 1));
-        toReturn.add(keyframes.get(currentKeyframe + 2));
+        int currentKeyframe;
 
+        if (time >= keyframes.get(keyframes.size() - 2).getTime()) {
+            currentKeyframe = keyframes.size() - 2;
+        } else {
+            currentKeyframe = getKeyframeIndex(time);
+        }
+
+        ArrayList<CameraPositionKeyframe> toReturn;
+
+        if (keyframes.size() <= 4) {
+            toReturn = new ArrayList<>(keyframes);
+        } else {
+            toReturn = new ArrayList<>();
+
+            if (currentKeyframe > keyframes.size() - 3) {
+                toReturn.add(keyframes.get(currentKeyframe - 2));
+                toReturn.add(keyframes.get(currentKeyframe - 1));
+                toReturn.add(keyframes.get(currentKeyframe));
+                toReturn.add(keyframes.get(currentKeyframe + 1));
+            } else {
+                toReturn.add(keyframes.get(currentKeyframe - 1));
+                toReturn.add(keyframes.get(currentKeyframe));
+                toReturn.add(keyframes.get(currentKeyframe + 1));
+                toReturn.add(keyframes.get(currentKeyframe + 2));
+            }
+        }
         return toReturn;
+    }
+
+    private CameraPositionKeyframe getLastUniqueKeyframe() {
+        return keyframes.get(keyframes.size() - 2);
     }
 
     private float getCurrentProgress(float time) {
         float timeIntoKeyframe = time - currentKeyframes.get(1).getTime();
         float transitionTime = currentKeyframes.get(2).getTime() - currentKeyframes.get(1).getTime();
 
-        return timeIntoKeyframe / transitionTime;
+        float progress = timeIntoKeyframe / transitionTime;
+
+        if (Float.isNaN(progress)) {
+            progress = 0;
+        }
+
+        return Math.clamp(progress, 0, 1);
     }
 
     private Vec3 calculateLinear(float progress, Vec3 origin, float rotation) {
-        CameraPositionKeyframe start =  keyframes.get(1);
-        CameraPositionKeyframe end = keyframes.get(2);
+        CameraPositionKeyframe start =  currentKeyframes.get(1);
+        CameraPositionKeyframe end = currentKeyframes.get(2);
 
         Vec3 startPos = KeyframeUtil.getOrientedPosition(start.getPosition(), rotation).add(origin);
         Vec3 endPos = KeyframeUtil.getOrientedPosition(end.getPosition(), rotation).add(origin);
 
-        double x = Mth.lerp(progress, startPos.x(), endPos.x());
-        double y = Mth.lerp(progress, startPos.y(), endPos.y());
-        double z = Mth.lerp(progress, startPos.z(), endPos.z());
+        Vec3 newPos = startPos.lerp(endPos, progress);
 
-        return new Vec3(x, y, z);
+        return newPos;
     }
 
     private Vec3 calculateSmooth(float progress, Vec3 origin, float rotation) {

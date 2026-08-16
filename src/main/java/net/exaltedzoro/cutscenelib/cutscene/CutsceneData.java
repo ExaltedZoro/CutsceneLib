@@ -2,13 +2,16 @@ package net.exaltedzoro.cutscenelib.cutscene;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.exaltedzoro.cutscenelib.cutscene.codec.CutsceneCodecs;
+import net.exaltedzoro.cutscenelib.codec.ModCodecs;
+import net.exaltedzoro.cutscenelib.cutscene.keyframe.Keyframe;
 import net.exaltedzoro.cutscenelib.cutscene.track.Track;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class CutsceneData {
+    public static final CutsceneData EMPTY = new CutsceneData("empty", new ArrayList<>());
+
     private final String displayName;
 
     /**
@@ -21,6 +24,9 @@ public class CutsceneData {
     public CutsceneData(String name, List<Track<?>> tracks) {
         this.displayName = name;
         this.tracks = new ArrayList<>(tracks);
+        for (Track<?> track : tracks) {
+            track.finalise();
+        }
     }
 
     public String getDisplayName() {
@@ -39,10 +45,22 @@ public class CutsceneData {
         Codec<CutsceneData> CODEC = RecordCodecBuilder.create(instance ->
                 instance.group(
                         Codec.STRING.fieldOf("display_name").forGetter(CutsceneData::getDisplayName),
-                        CutsceneCodecs.TRACK_CODEC.listOf().fieldOf("tracks").forGetter(CutsceneData::getTracks)
+                        ModCodecs.TRACK_CODEC.listOf().fieldOf("tracks").forGetter(CutsceneData::getTracks)
                 ).apply(instance, CutsceneData::new)
         );
 
         return CODEC;
+    }
+
+    public float getLength() {
+        float length = 0;
+        for (Track<?> track : tracks) {
+            Keyframe lastKeyframe = track.getKeyframes().getLast();
+            if (lastKeyframe.getTime() > length) {
+                length = lastKeyframe.getTime();
+            }
+        }
+
+        return length;
     }
 }

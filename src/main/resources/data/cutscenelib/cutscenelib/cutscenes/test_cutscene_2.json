@@ -1,5 +1,5 @@
 {
-  "display_name": "Test Cutscene",
+  "display_name": "Test Cutscene 2",
   "tracks" : [
     {
       "type": "cutscenelib:camera_rotation",
@@ -7,6 +7,11 @@
         {
           "time": 0.0,
           "rotation": [0, 0, 0],
+          "interpolation": "linear"
+        },
+        {
+          "time": 60,
+          "rotation": [0, 90, 0],
           "interpolation": "linear"
         }
       ]
@@ -17,7 +22,7 @@
         {
           "time": 0,
           "position": [0, 0, 0],
-          "interpolation": "smooth"
+          "interpolation": "linear"
         }
       ]
     }

@@ -31,7 +31,8 @@ public class CameraPositionKeyframe extends Keyframe {
         return interpolation;
     }
 
-    static {
-
+    @Override
+    public Keyframe copy() {
+        return new CameraPositionKeyframe(time, position, interpolation);
     }
 }

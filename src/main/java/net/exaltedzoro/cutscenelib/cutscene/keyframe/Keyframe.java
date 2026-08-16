@@ -6,4 +6,6 @@ public abstract class Keyframe {
     public float getTime() {
         return time;
     }
+
+    public abstract Keyframe copy();
 }

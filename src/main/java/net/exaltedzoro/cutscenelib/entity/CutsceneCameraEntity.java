@@ -1,6 +1,5 @@
 package net.exaltedzoro.cutscenelib.entity;
 
-import net.exaltedzoro.cutscenelib.cutscene.Cutscene;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.Entity;
@@ -9,34 +8,23 @@ import net.minecraft.world.level.Level;
 
 public class CutsceneCameraEntity extends Entity {
 
-    Cutscene activeCutscene;
-
-    public CutsceneCameraEntity(EntityType<? extends CutsceneCameraEntity> entityType, Level level) {
+    public CutsceneCameraEntity(EntityType<? extends Entity> entityType, Level level) {
         super(entityType, level);
     }
 
-    public Cutscene getActiveCutscene() {
-        return activeCutscene;
-    }
-
-    public void setActiveCutscene(Cutscene cutscene) {
-        this.activeCutscene = cutscene;
-    }
-
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+    public void tick() {
 
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag compoundTag) {
-
-    }
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {}
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag compoundTag) {
+    protected void readAdditionalSaveData(CompoundTag compoundTag) {}
 
-    }
+    @Override
+    protected void addAdditionalSaveData(CompoundTag compoundTag) {}
 
     @Override
     public boolean isNoGravity() {

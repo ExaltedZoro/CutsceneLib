@@ -1,3 +1,20 @@
+0.0.5
+- Cutscenes can now be played
+- Added a CutsceneManager to hold scheduled cutscenes as well as begin, end and progress them
+- Added keyframe and track types for sounds (doesn't support positional sounds yet)
+- Cutscenes can now be properly triggered by the run_cutscene command
+- Added targets argument to run_cutscene command
+- Added a copy method for keyframes
+- Removed an unnecessary portion of static code from CameraPositionKeyframe
+- Removed tick field from Cutscene
+- Fixed a possible division by 0 in continuous track types if 2 sequential keyframes have a time value of 0 (including duplicated ends)
+- Actually added a mod registry for entities
+- Camera rotation in keyframes is now stored as a Vec3 instead of a Quaternionf
+- Added a static EMPTY field for Cutscenes and CutsceneDatas
+- Camera rotation now has the same JSON format as camera position
+- Added a second test cutscene
+
+
 0.0.4
 - Added datapack support for cutscenes
 - Added test_cutscene.json

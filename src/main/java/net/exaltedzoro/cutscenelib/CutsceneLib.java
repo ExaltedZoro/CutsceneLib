@@ -2,7 +2,9 @@ package net.exaltedzoro.cutscenelib;
 
 import net.exaltedzoro.cutscenelib.command.CommandEvents;
 import net.exaltedzoro.cutscenelib.cutscene.track.ModTrackTypes;
+import net.exaltedzoro.cutscenelib.entity.ModEntities;
 import net.exaltedzoro.cutscenelib.event.CutsceneEvents;
+import net.exaltedzoro.cutscenelib.networking.NetworkingEvents;
 import net.exaltedzoro.cutscenelib.registry.ModRegistries;
 import org.slf4j.Logger;
 
@@ -41,6 +43,9 @@ public class CutsceneLib {
     public static final String MODID = "cutscenelib";
     // Directly reference a slf4j logger
     public static final Logger LOGGER = LogUtils.getLogger();
+
+    public static final int CUTSCENE_START_DELAY = 10;
+
     // Create a Deferred Register to hold Blocks which will all be registered under the "cutscenelib" namespace
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
     // Create a Deferred Register to hold Items which will all be registered under the "cutscenelib" namespace
@@ -86,8 +91,10 @@ public class CutsceneLib {
         NeoForge.EVENT_BUS.register(CutsceneEvents.class);
         NeoForge.EVENT_BUS.register(CommandEvents.class);
         //NeoForge.EVENT_BUS.register(ClientEvents.class);
+        ModEntities.register(modEventBus);
         modEventBus.register(ModRegistries.class);
         modEventBus.register(ModTrackTypes.class);
+        modEventBus.register(NetworkingEvents.class);
 
         // Register the item to a creative tab
         modEventBus.addListener(this::addCreative);

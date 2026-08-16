@@ -8,6 +8,8 @@ import net.minecraft.world.phys.Vec3;
 import java.util.ArrayList;
 
 public class Cutscene {
+    public static final Cutscene EMPTY = new Cutscene(CutsceneData.EMPTY, Vec3.ZERO, 0);
+
     /**
      * The origin of the cutscene in world coordinates. All keyframe positions will be taken relative to this vector.
      */
@@ -24,16 +26,17 @@ public class Cutscene {
 
     protected long startTime;
 
-    protected int tick = 0;
+    private boolean initialised = false;
 
-    public Cutscene(CutsceneData data, Vec3 origin) {
-        this(data, origin, 0);
+    public Cutscene(CutsceneData data, Vec3 origin, long startTime) {
+        this(data, origin, 0, startTime);
     }
 
-    public Cutscene(CutsceneData data, Vec3 origin, float rotation) {
+    public Cutscene(CutsceneData data, Vec3 origin, float rotation, long startTime) {
         this.data = data;
         this.origin = origin;
         this.rotation = rotation;
+        this.startTime = startTime;
     }
 
     public Vec3 getOrigin() {
@@ -56,21 +59,29 @@ public class Cutscene {
         this.paused = paused;
     }
 
-    public int getTick() {
-        return tick;
-    }
-
-    public void setTick(int tick) {
-        this.tick = tick;
+    public long getStartTime() {
+        return startTime;
     }
 
     public float getRotation() {
         return rotation;
     }
 
+    public boolean isInitialised() {
+        return initialised;
+    }
+
+    // Initialises all tracks to their starting position. Primarily used to get the camera in the right place when a cutscene is first started
+    public void initialise() {
+        for (Track<?> track : data.getTracks()) {
+            track.evaluate(0, this);
+        }
+
+        this.initialised = true;
+    }
+
     public void tick(float partialTick) {
         Level level = Minecraft.getInstance().level;
-        assert (level != null);
         float elapsedTime = level.getGameTime() - startTime + partialTick;
 
         ArrayList<Track<?>> tracks = data.getTracks();
