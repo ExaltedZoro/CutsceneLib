@@ -1,7 +1,9 @@
-package net.exaltedzoro.cutscenelib.cutscene.keyframe;
+package net.exaltedzoro.cutscenelib.cutscene.keyframe.camera;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.exaltedzoro.cutscenelib.cutscene.keyframe.Keyframe;
+import net.exaltedzoro.cutscenelib.cutscene.keyframe.KeyframeInterpolation;
 import net.minecraft.world.phys.Vec3;
 
 public class CameraPositionKeyframe extends Keyframe {

@@ -1,3 +1,19 @@
+0.0.6
+- Camera FOV can now be manipulated during cutscenes
+- Added screen shake tracks and keyframes
+- Global screen shake intensity can be set in config
+- Fixed a time calculation issue in cutscenes that caused them to constantly stutter slightly. All cutscenes should now be much smoother
+- Fixed a possible crash when a continuous track has a single keyframe with smooth interpolation
+- Sound keyframes now support positional sounds (sounds at actor positions will be supported once actors have been implemented)
+- Moved ModTrackTypes into the registry package
+- Player hand is no longer rendered during cutscenes
+- Player model rendering can be switched on and off for cutscenes (off by default)
+- Camera pitch is now set in computeCameraAngles rather than the track itself
+- Camera entity now has a specific UUID to avoid potential collisions
+- Track.keyframes is now protected instead of private
+- Added mod logo to asset files
+
+
 0.0.5
 - Cutscenes can now be played
 - Added a CutsceneManager to hold scheduled cutscenes as well as begin, end and progress them

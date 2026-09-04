@@ -1,13 +1,13 @@
 {
   "display_name": "Test Cutscene 2",
-  "tracks" : [
+  "tracks": [
     {
       "type": "cutscenelib:camera_rotation",
       "keyframes": [
         {
           "time": 0.0,
           "rotation": [0, 0, 0],
-          "interpolation": "linear"
+          "interpolation": "smooth"
         },
         {
           "time": 60,
@@ -22,7 +22,48 @@
         {
           "time": 0,
           "position": [0, 0, 0],
+          "interpolation": "smooth"
+        },
+        {
+          "time": 60,
+          "position": [0, 10, 0],
           "interpolation": "linear"
+        }
+      ]
+    },
+    {
+      "type": "cutscenelib:fov",
+      "keyframes": [
+        {
+          "time": 0,
+          "fov": 90,
+          "interpolation": "linear"
+        },
+        {
+          "time": 40,
+          "fov": 45,
+          "interpolation": "linear"
+        }
+      ]
+    },
+    {
+      "type": "cutscenelib:sound",
+      "keyframes": [
+        {
+          "time": 20,
+          "sound": "minecraft:block.amethyst_block.break",
+          "position": [5, 0, 0]
+        }
+      ]
+    },
+    {
+      "type": "cutscenelib:camera_rotation_shake",
+      "keyframes": [
+        {
+          "time": 10,
+          "duration": 20,
+          "speed": 1,
+          "intensity": 1
         }
       ]
     }

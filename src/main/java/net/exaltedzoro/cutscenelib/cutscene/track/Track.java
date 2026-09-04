@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 
 public abstract class Track<T extends Keyframe> {
-    ArrayList<T> keyframes;
+    protected ArrayList<T> keyframes;
 
     public Track(ArrayList<T> keyframes) {
         this.keyframes = keyframes;

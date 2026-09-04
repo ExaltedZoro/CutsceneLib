@@ -1,10 +1,13 @@
-package net.exaltedzoro.cutscenelib.cutscene.track;
+package net.exaltedzoro.cutscenelib.cutscene.track.camera;
 
 import com.mojang.serialization.MapCodec;
+import net.exaltedzoro.cutscenelib.CutsceneLib;
 import net.exaltedzoro.cutscenelib.cutscene.Cutscene;
-import net.exaltedzoro.cutscenelib.cutscene.keyframe.CameraRotationKeyframe;
+import net.exaltedzoro.cutscenelib.cutscene.keyframe.camera.CameraRotationKeyframe;
 import net.exaltedzoro.cutscenelib.cutscene.keyframe.KeyframeUtil;
+import net.exaltedzoro.cutscenelib.cutscene.track.Track;
 import net.exaltedzoro.cutscenelib.entity.CutsceneCameraEntity;
+import net.exaltedzoro.cutscenelib.registry.ModTrackTypes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
@@ -25,7 +28,7 @@ public class CameraRotationTrack extends Track<CameraRotationKeyframe> {
 
     @Override
     public MapCodec<? extends Track<?>> type() {
-        return ModTrackTypes.CAMERA_POSITION_TRACK_CODEC;
+        return ModTrackTypes.CAMERA_ROTATION_TRACK_CODEC;
     }
 
     /**
@@ -38,30 +41,35 @@ public class CameraRotationTrack extends Track<CameraRotationKeyframe> {
 
     @Override
     public void evaluate(float time, Cutscene cutscene) {
+        CutsceneLib.LOGGER.info("Time: {}", time);
         // Only reevaluate current keyframes if necessary
-        if (time >= currentKeyframes.get(2).getTime()) {
+        if (time >= currentKeyframes.get(2).getTime() || !cutscene.isInitialised()) {
             recacheCurrentKeyframes(time);
         }
 
         Vec3 newRotation = Vec3.ZERO;
         float progress = getCurrentProgress(time);
 
-        switch (currentKeyframes.get(1).getInterpolation()) {
-            case LINEAR -> {
-                newRotation = calculateLinear(progress, cutscene.getRotation());
-            }
-            case SMOOTH -> {
-                newRotation = calculateSmooth(progress, cutscene.getRotation());
-            }
-            case CUT -> {
-                newRotation = currentKeyframes.get(1).getRotation();
+        if (keyframes.size() <= 3) {
+            newRotation = keyframes.get(1).getRotation();
+        } else {
+            switch (currentKeyframes.get(1).getInterpolation()) {
+                case LINEAR -> {
+                    newRotation = calculateLinear(progress, cutscene.getRotation());
+                }
+                case SMOOTH -> {
+                    newRotation = calculateSmooth(progress, cutscene.getRotation());
+                }
+                case CUT -> {
+                    newRotation = currentKeyframes.get(1).getRotation();
+                }
             }
         }
 
         if (Minecraft.getInstance().getCameraEntity() instanceof CutsceneCameraEntity cameraEntity) {
             cameraEntity.absRotateTo((float) currentRotation.y(), (float) currentRotation.x());
-            cameraEntity.setXRot((float) newRotation.x());
-            cameraEntity.setYRot((float) newRotation.y());
+            //cameraEntity.setXRot((float) newRotation.x());
+            cameraEntity.setYRot((float) newRotation.y() % 360f);
         }
         currentRotation = newRotation;
     }

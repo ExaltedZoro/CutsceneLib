@@ -1,11 +1,13 @@
-package net.exaltedzoro.cutscenelib.cutscene.track;
+package net.exaltedzoro.cutscenelib.cutscene.track.camera;
 
 import com.mojang.serialization.MapCodec;
 import net.exaltedzoro.cutscenelib.CutsceneLib;
 import net.exaltedzoro.cutscenelib.cutscene.Cutscene;
-import net.exaltedzoro.cutscenelib.cutscene.keyframe.CameraPositionKeyframe;
+import net.exaltedzoro.cutscenelib.cutscene.keyframe.camera.CameraPositionKeyframe;
 import net.exaltedzoro.cutscenelib.cutscene.keyframe.KeyframeUtil;
+import net.exaltedzoro.cutscenelib.cutscene.track.Track;
 import net.exaltedzoro.cutscenelib.entity.CutsceneCameraEntity;
+import net.exaltedzoro.cutscenelib.registry.ModTrackTypes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
@@ -37,7 +39,7 @@ public class CameraPositionTrack extends Track<CameraPositionKeyframe> {
     @Override
     public void evaluate(float time, Cutscene cutscene) {
         // Only reevaluate current keyframes if necessary
-        if (time >= currentKeyframes.get(2).getTime()) {
+        if (time >= currentKeyframes.get(2).getTime() || !cutscene.isInitialised()) {
             recacheCurrentKeyframes(time);
         }
 
@@ -46,19 +48,24 @@ public class CameraPositionTrack extends Track<CameraPositionKeyframe> {
         Vec3 newPosition = Vec3.ZERO;
         float progress = getCurrentProgress(time);
 
-        switch (currentKeyframes.get(1).getInterpolation()) {
-            case LINEAR -> {
-                newPosition = calculateLinear(progress, cutscene.getOrigin(), cutscene.getRotation());
-            }
-            case SMOOTH ->  {
-                newPosition = calculateSmooth(progress, cutscene.getOrigin(), cutscene.getRotation());
-            }
-            case CUT -> {
-                newPosition = currentKeyframes.get(1).getPosition().add(cutscene.getOrigin());
+        // If there's only 1 unique keyframe, just return that value
+        if (keyframes.size() <= 3) {
+            newPosition = keyframes.get(1).getPosition();
+        } else {
+            switch (currentKeyframes.get(1).getInterpolation()) {
+                case LINEAR -> {
+                    newPosition = calculateLinear(progress, cutscene.getOrigin(), cutscene.getRotation());
+                }
+                case SMOOTH -> {
+                    newPosition = calculateSmooth(progress, cutscene.getOrigin(), cutscene.getRotation());
+                }
+                case CUT -> {
+                    newPosition = currentKeyframes.get(1).getPosition().add(cutscene.getOrigin());
+                }
             }
         }
 
-        CutsceneLib.LOGGER.info("Time: {}, Position: {}", time, newPosition);
+        // CutsceneLib.LOGGER.info("Time: {}, Position: {}", time, newPosition);
 
         Vec3 currentPosition = cameraEntity.position();
 

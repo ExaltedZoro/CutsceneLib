@@ -17,7 +17,11 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 public class Config {
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
-    public static final ModConfigSpec.BooleanValue LOG_DIRT_BLOCK = BUILDER
+    public static final ModConfigSpec.ConfigValue<Float> CAMERA_SHAKE_INTENSITY = BUILDER
+            .comment(" How intense camera shake should be during cutscenes. (0 turns camera shake off, 1 is default etc.)")
+            .define("camera_shake_intensity", 1f);
+
+    /*public static final ModConfigSpec.BooleanValue LOG_DIRT_BLOCK = BUILDER
             .comment("Whether to log the dirt block on common setup")
             .define("logDirtBlock", true);
 
@@ -32,7 +36,7 @@ public class Config {
     // a list of strings that are treated as resource locations for items
     public static final ModConfigSpec.ConfigValue<List<? extends String>> ITEM_STRINGS = BUILDER
             .comment("A list of items to log on common setup.")
-            .defineListAllowEmpty("items", List.of("minecraft:iron_ingot"), () -> "", Config::validateItemName);
+            .defineListAllowEmpty("items", List.of("minecraft:iron_ingot"), () -> "", Config::validateItemName);*/
 
     static final ModConfigSpec SPEC = BUILDER.build();
 

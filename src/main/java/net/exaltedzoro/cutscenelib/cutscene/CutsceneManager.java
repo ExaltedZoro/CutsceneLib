@@ -16,6 +16,8 @@ public class CutsceneManager {
 
     private ArrayList<Cutscene> queue =  new ArrayList<>();
 
+    private long frame = 0;
+
     public Cutscene getActiveCutscene() {
         return activeCutscene;
     }
@@ -42,6 +44,8 @@ public class CutsceneManager {
 
             // If there is already a cutscene playing
             if (hasActiveCutscene() && Minecraft.getInstance().getCameraEntity() instanceof CutsceneCameraEntity) {
+                frame += 1;
+                // CutsceneLib.LOGGER.info("Frame: {}, Gametime: {}, Partial tick: {}", frame, gameTime, partialTick);
                 getActiveCutscene().tick(partialTick);
             } else if (!queue.isEmpty()) {
 
@@ -66,8 +70,12 @@ public class CutsceneManager {
         CutsceneLib.LOGGER.info("Starting Cutscene");
 
         CutsceneCameraEntity cameraEntity = new CutsceneCameraEntity(ModEntities.CUTSCENE_CAMERA.get(), level);
+        cameraEntity.absMoveTo(cutscene.getOrigin().x(), cutscene.getOrigin().y(), cutscene.getOrigin().z());
+        cameraEntity.setXRot(0);
+        cameraEntity.setYRot(0);
         Minecraft.getInstance().setCameraEntity(cameraEntity);
         cutscene.initialise();
+        frame = 0;
     }
 
     private void endCutscene() {

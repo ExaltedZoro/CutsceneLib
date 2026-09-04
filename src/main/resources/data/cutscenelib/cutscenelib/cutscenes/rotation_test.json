@@ -1,0 +1,25 @@
+{
+  "display_name": "Rotation Test",
+  "tracks": [
+    {
+      "type": "cutscenelib:camera_rotation",
+      "keyframes": [
+        {
+          "time": 0,
+          "rotation": [0, 0, 0],
+          "interpolation": "smooth"
+        },
+        {
+          "time": 100,
+          "rotation": [90, 0, 0],
+          "interpolation": "smooth"
+        },
+        {
+          "time": 120,
+          "rotation": [180, 0, 0],
+          "interpolation": "linear"
+        }
+      ]
+    }
+  ]
+}
