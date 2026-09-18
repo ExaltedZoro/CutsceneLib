@@ -1,3 +1,6 @@
+0.0.61
+- Updated LICENSE and README
+
 0.0.6
 - Camera FOV can now be manipulated during cutscenes
 - Added screen shake tracks and keyframes
